@@ -32,6 +32,8 @@ func createTaskInfo(offer *mesosproto.Offer, resources []*mesosproto.Resource, t
 		Command:   &mesosproto.CommandInfo{},
 	}
 
+	fmt.Printf("Task Info   %v\n", taskInfo);
+
 	// Set value only if provided
 	if task.Command[0] != "" {
 		taskInfo.Command.Value = &task.Command[0]
@@ -41,6 +43,15 @@ func createTaskInfo(offer *mesosproto.Offer, resources []*mesosproto.Resource, t
 	if len(task.Command) > 1 {
 		taskInfo.Command.Arguments = task.Command[1:]
 	}
+
+	var str = new (string);
+	*str = "-e";
+	//taskInfo.Command.Value = str;
+	var b = new(bool);
+	*b = true;
+	taskInfo.Command.Shell = b;
+	//taskInfo.Command.Arguments = []string{"-e SWIFT_PWORKERS=3"}
+	fmt.Printf("arguments  \n", taskInfo.Command);
 
 	// Set the docker image if specified
 	if task.Image != "" {
@@ -68,16 +79,36 @@ func createTaskInfo(offer *mesosproto.Offer, resources []*mesosproto.Resource, t
 			})
 		}
 
-		taskInfo.Command.Shell = proto.Bool(false)
+		taskInfo.Command.Shell = proto.Bool(true)
+		
+		var params = &mesos.proto.Parameter{ 
+							Key:"-e",
+							Value:"SWIFT_PWORKERS=3", 
+						  }
+
+//		taskInfo.Container.Docker.Parameters := []*mesos.proto.Parameters{params};
+		fmt.Printf("\n\n");
+		fmt.Printf("Docker  %v\n", taskInfo.Container.Docker.Parameters); 		
+		fmt.Printf("Task Info Command  %v\n", taskInfo.Command);
+		fmt.Printf("\n\n");
 	}
 
 	return &taskInfo
 }
 
 func (m *MesosLib) LaunchTask(offer *mesosproto.Offer, resources []*mesosproto.Resource, task *Task) error {
-	m.Log.WithFields(logrus.Fields{"ID": task.ID, "command": task.Command, "offerId": offer.Id, "dockerImage": task.Image}).Info("Launching task...")
+	m.Log.WithFields(logrus.Fields{"ID": task.ID, "command_arjun": task.Command, "offerId": offer.Id, "dockerImage": task.Image}).Info("Launching task...")
+
+	//fmt.Printf("Task  %v\n", task);
+	fmt.Printf("Command  %v\n", task.Command);
+
+        for i:= range resources {
+		fmt.Printf("%v  i= %v\n", resources[i], i);
+	}
 
 	taskInfo := createTaskInfo(offer, resources, task)
+
+	fmt.Printf("\nCommandInfo_ContainerInfo   %v\n", taskInfo.Command.Container);
 
 	return m.send(&mesosproto.LaunchTasksMessage{
 		FrameworkId: m.frameworkInfo.Id,

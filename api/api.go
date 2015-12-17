@@ -88,6 +88,8 @@ func (api *API) tasksAdd(w http.ResponseWriter, r *http.Request) {
 				return err
 			}
 
+			fmt.Printf("volume \n\n", task.Volumes);
+			
 			return api.m.LaunchTask(offers[0], resources, &mesoslib.Task{
 				ID:      task.ID,
 				Command: strings.Split(task.Command, " "),

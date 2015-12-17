@@ -97,7 +97,7 @@ func createTaskInfo(offer *mesosproto.Offer, resources []*mesosproto.Resource, t
 }
 
 func (m *MesosLib) LaunchTask(offer *mesosproto.Offer, resources []*mesosproto.Resource, task *Task) error {
-	m.Log.WithFields(logrus.Fields{"ID": task.ID, "command_arjun": task.Command, "offerId": offer.Id, "dockerImage": task.Image}).Info("Launching task...")
+	m.Log.WithFields(logrus.Fields{"ID": task.ID, "command": task.Command, "offerId": offer.Id, "dockerImage": task.Image}).Info("Launching task...")
 
 	//fmt.Printf("Task  %v\n", task);
 	fmt.Printf("Command  %v\n", task.Command);
